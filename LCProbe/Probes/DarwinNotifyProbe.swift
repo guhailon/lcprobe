@@ -38,7 +38,7 @@ final class DarwinNotifyProbe {
             center,
             observer,
             darwinNotifyCallback,
-            CFNotificationName(notificationName as CFString),
+            notificationName as CFString,
             nil,
             .deliverImmediately
         )
@@ -48,7 +48,7 @@ final class DarwinNotifyProbe {
         let finishOnce: (ProbeOutcome, String) -> Void = { outcome, summary in
             guard !finished else { return }
             finished = true
-            CFNotificationCenterRemoveObserver(center, observer, CFNotificationName(notificationName as CFString), nil)
+            CFNotificationCenterRemoveObserver(center, observer, notificationName as CFString, nil)
             log.log("[T5] 已取消监听")
             completion(outcome, summary)
         }
@@ -60,7 +60,7 @@ final class DarwinNotifyProbe {
                 state.recordPost()
                 CFNotificationCenterPostNotification(
                     center,
-                    CFNotificationName(notificationName as CFString),
+                    notificationName as CFString,
                     nil,
                     nil,
                     true
