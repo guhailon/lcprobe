@@ -8,7 +8,12 @@ import MediaPlayer
 /// 绝不调用任何私有 MediaRemote 接口。
 /// 判定：
 /// - Apple Music：三次中至少一次 title 非 nil 且 currentPlaybackTime 在推进 → passed，否则 failed
-/// - QQ 音乐：三次 title 全为 nil → passed；任一次非 nil → failed（边界假设被推翻）
+/// - QQ 音乐：三次 title 全为 nil → passed；任一次非 nil → notTestable，
+///   只逐条报告采样结果，不下“边界被推翻”的结论——实测证明
+///   systemMusicPlayer 返回的是系统级正在播放信息（可能是 Apple Music
+///   的歌名，即使已暂停/过期），无法据此认定读到的是 QQ 音乐；
+///   要归因到 QQ 音乐必须单独测试：只放 QQ 音乐、Apple Music 停掉、
+///   且放一首与 Apple Music 不同的歌，再单独跑 T3。
 /// - systemMusicPlayer 拿不到实例 → notTestable
 final class SystemPlayerProbe {
 
@@ -89,9 +94,14 @@ final class SystemPlayerProbe {
                     log.log("[T3] \(summary)")
                     completion(.passed, summary)
                 } else {
-                    let summary = "边界假设被推翻：QQ 音乐播放时读到歌名「\(nonNilTitles.joined(separator: "、"))」，systemMusicPlayer 对 QQ 音乐并非恒为 nil"
+                    // 不下推翻边界的结论：systemMusicPlayer 返回的是
+                    // 系统级正在播放信息，读到的歌名可能是 Apple Music 的
+                    // （即使已暂停/过期），无法归因到 QQ 音乐。只逐条报告
+                    // 采样结果（见上方三条采样日志），归因需单独测试。
+                    log.log("[T3] 注意：systemMusicPlayer 返回系统级正在播放信息，读到的歌名可能是 Apple Music 的（即使已暂停/过期），无法据此认定是 QQ 音乐；要归因到 QQ 音乐需单独测试：只放 QQ 音乐、Apple Music 停掉、且放一首与 Apple Music 不同的歌，再单独跑 T3")
+                    let summary = "三次采样读到非 nil 歌名「\(nonNilTitles.joined(separator: "、"))」，state=\(states.map { "\($0.rawValue)" }.joined(separator: ","))，但无法归因到 QQ 音乐（可能是 Apple Music 的系统级信息，见日志）；归因需单独测试：只放 QQ 音乐、Apple Music 停掉、放一首与 Apple Music 不同的歌，再单独跑 T3"
                     log.log("[T3] \(summary)")
-                    completion(.failed, summary)
+                    completion(.notTestable(summary), summary)
                 }
             }
         }

@@ -3,18 +3,15 @@ import Network
 
 /// T7 Loopback：多任务模式下双 Guest 间 127.0.0.1 是否通（FINDINGS §7 T7、§4.4）。
 ///
-/// 两档能力：
-/// (a) startServer：用 Network 框架 NWListener（tcp，127.0.0.1，端口 0 随机）
-///     起一个 HTTP 服务，收到 GET /snapshot 返回
-///     {"probe":"LCProbe","time":<时间戳>} 的 JSON，并在界面上显示实际端口；
-/// (b) fetchSnapshot(port:)：NWConnection 连 127.0.0.1:port 请求一次，
-///     5 秒超时，记录是否拿到 JSON。
-///
-/// run 的做法：先尝试本机自环（起服务再自己连自己一次，验证 loopback
-/// 本机通），再 log 提示“多任务模式请在另一实例输入本机端口点请求”，
-/// completion 按自环结果判定：
-/// - 自环成功 → passed（summary 写明端口与“多任务双实例待手动验证”）；
-/// - 自环失败 → failed。
+/// 三种模式：
+/// - run（原有行为不变）：先尝试本机自环（起服务再自己连自己一次，
+///   验证 loopback 本机通），再 log 提示多任务手动验证；
+/// - startServerMode（服务端模式，v0.1.2 新增）：起服务，把实际端口写进
+///   共享目录（LC_HOME_PATH/Documents）的 LCProbePort-<instanceID>.json，
+///   界面上显示端口，服务保持运行，供另一实例请求；
+/// - runClient（客户端模式，v0.1.2 新增）：读共享目录下另一实例的端口文件
+///   请求 /snapshot；没有端口文件时改用手动输入的端口；两者都没有则记
+///   notTestable。
 ///
 /// 注意：单 Guest 标准模式下宿主是否存活未证实，run 里不作假定，只记录。
 /// 服务在 run 结束后保持运行，供另一实例手动请求；端口见 currentPort。
@@ -54,6 +51,111 @@ final class LoopbackProbe {
                     completion(.failed, summary)
                 }
             }
+        }
+    }
+
+    /// 服务端模式：起服务，把实际端口写进共享目录的端口文件，
+    /// 界面显示端口，服务保持运行。completion 按起服务结果判定。
+    static func startServerMode(log: LogStore, completion: @escaping (ProbeOutcome, String) -> Void) {
+        log.log("[T7] 开始 loopback 服务端模式：起服务并把端口写进共享目录")
+        startServer(log: log) { port in
+            guard let port else {
+                let summary = "服务端起不来（NWListener 未就绪）"
+                log.log("[T7] \(summary)")
+                completion(.failed, summary)
+                return
+            }
+            let portFile = writePortFile(port: port, log: log)
+            let summary: String
+            if let portFile {
+                summary = "服务端已起：端口 \(port)，端口文件 \(portFile.lastPathComponent) 已写共享目录；服务保持运行，另一实例点 T7 客户端即可请求"
+            } else {
+                summary = "服务端已起：端口 \(port)，但端口文件写失败——另一实例只能手动输入端口 \(port) 请求；服务保持运行"
+            }
+            log.log("[T7] \(summary)")
+            completion(.passed, summary)
+        }
+    }
+
+    /// 客户端模式：读共享目录下另一实例的端口文件请求 /snapshot；
+    /// 没有端口文件时改用手动输入的端口；两者都没有记 notTestable。
+    static func runClient(log: LogStore, manualPort: Int?, completion: @escaping (ProbeOutcome, String) -> Void) {
+        log.log("[T7] 开始 loopback 客户端模式：先找另一实例的端口文件")
+        let ownID = CrossGuest.instanceID
+        let dir = CrossGuest.sharedDocumentsURL()
+        var otherPort: Int?
+        var otherID = ""
+        if let files = try? FileManager.default.contentsOfDirectory(
+            at: dir, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]) {
+            for file in files where file.lastPathComponent.hasPrefix("LCProbePort-")
+                && file.lastPathComponent.hasSuffix(".json") {
+                guard let data = try? Data(contentsOf: file),
+                      let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let pid = obj["instanceID"] as? String, pid != ownID,
+                      let port = obj["port"] as? Int else { continue }
+                otherPort = port
+                otherID = pid
+                log.log("[T7] 找到另一实例的端口文件：\(file.lastPathComponent)，instanceID=\(pid)，port=\(port)")
+                break
+            }
+        }
+        if otherPort == nil {
+            log.log("[T7] 共享目录 \(dir.path) 下未见另一实例的端口文件")
+        }
+        guard let port = otherPort ?? manualPort else {
+            let summary = "未找到另一实例的端口文件，也未输入手动端口，无法发起请求（请先在另一实例点 T7 服务端，或输入对方显示的端口）"
+            log.log("[T7] \(summary)")
+            completion(.notTestable(summary), summary)
+            return
+        }
+        if otherPort == nil {
+            log.log("[T7] 无端口文件，改用手动输入的端口 \(port)")
+        }
+        fetchSnapshot(port: port, log: log) { ok, detail in
+            if ok {
+                let from = otherPort != nil ? "另一实例（\(otherID)）端口 \(port)" : "手动端口 \(port)"
+                let summary = "跨实例请求成功：向\(from)请求 /snapshot 拿到快照 JSON：\(detail)"
+                log.log("[T7] \(summary)")
+                completion(.passed, summary)
+            } else {
+                let summary = "跨实例请求失败（端口 \(port)：\(detail)）"
+                log.log("[T7] \(summary)")
+                completion(.failed, summary)
+            }
+        }
+    }
+
+    /// 把本实例的服务端口写进共享目录：LCProbePort-<instanceID>.json。
+    /// 返回写好的文件 URL，写失败返回 nil（只记日志）。
+    private static func writePortFile(port: Int, log: LogStore) -> URL? {
+        let instanceID = CrossGuest.instanceID
+        let dir = CrossGuest.sharedDocumentsURL()
+        let url = dir.appendingPathComponent("LCProbePort-\(instanceID).json")
+        let stamp = ISO8601DateFormatter().string(from: Date())
+        let dict: [String: Any] = [
+            "probe": "LCProbe",
+            "test": "T7",
+            "instanceID": instanceID,
+            "port": port,
+            "time": stamp,
+        ]
+        guard let data = try? JSONSerialization.data(withJSONObject: dict, options: [.sortedKeys]) else {
+            log.log("[T7] 端口文件 JSON 序列化失败")
+            return nil
+        }
+        let tempURL = dir.appendingPathComponent(".LCProbePort-\(instanceID).tmp")
+        do {
+            try data.write(to: tempURL, options: .atomic)
+            if FileManager.default.fileExists(atPath: url.path) {
+                try FileManager.default.removeItem(at: url)
+            }
+            try FileManager.default.moveItem(at: tempURL, to: url)
+            log.log("[T7] 已写端口文件：\(url.path)")
+            return url
+        } catch {
+            log.log("[T7] 写端口文件失败 \(url.path)：\(error.localizedDescription)")
+            try? FileManager.default.removeItem(at: tempURL)
+            return nil
         }
     }
 

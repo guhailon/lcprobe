@@ -67,6 +67,74 @@
 			isa = PBXBuildFile;
 			fileRef = 100000000000000000000043 /* ShazamKit.framework */;
 		};
+		100000000000000000000055 /* InstanceID.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000026 /* InstanceID.swift */;
+		};
+		200000000000000000000110 /* LCProbeApp.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000021 /* LCProbeApp.swift */;
+		};
+		200000000000000000000111 /* LogStore.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000022 /* LogStore.swift */;
+		};
+		200000000000000000000112 /* ProbeTypes.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000023 /* ProbeTypes.swift */;
+		};
+		200000000000000000000113 /* DiagnosticsView.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000024 /* DiagnosticsView.swift */;
+		};
+		200000000000000000000114 /* InstanceID.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000026 /* InstanceID.swift */;
+		};
+		200000000000000000000115 /* EntitlementProbe.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000031 /* EntitlementProbe.swift */;
+		};
+		200000000000000000000116 /* SystemPlayerProbe.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000032 /* SystemPlayerProbe.swift */;
+		};
+		200000000000000000000117 /* FileShareProbe.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000033 /* FileShareProbe.swift */;
+		};
+		200000000000000000000118 /* DarwinNotifyProbe.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000034 /* DarwinNotifyProbe.swift */;
+		};
+		200000000000000000000119 /* ShazamProbe.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000035 /* ShazamProbe.swift */;
+		};
+		200000000000000000000120 /* LoopbackProbe.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000036 /* LoopbackProbe.swift */;
+		};
+		200000000000000000000121 /* GuestMusicProbe.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000037 /* GuestMusicProbe.swift */;
+		};
+		200000000000000000000122 /* PiPProbe.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000038 /* PiPProbe.swift */;
+		};
+		200000000000000000000123 /* MediaPlayer.framework in Frameworks */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000041 /* MediaPlayer.framework */;
+		};
+		200000000000000000000124 /* AVFoundation.framework in Frameworks */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000042 /* AVFoundation.framework */;
+		};
+		200000000000000000000125 /* ShazamKit.framework in Frameworks */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000043 /* ShazamKit.framework */;
+		};
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -189,6 +257,27 @@
 			path = System/Library/Frameworks/ShazamKit.framework;
 			sourceTree = SDKROOT;
 		};
+		200000000000000000000101 /* LCProbeB.app */ = {
+			isa = PBXFileReference;
+			explicitFileType = "wrapper.application";
+			includeInIndex = 0;
+			path = "LCProbeB.app";
+			sourceTree = "BUILT_PRODUCTS_DIR";
+		};
+		200000000000000000000102 /* Info-B.plist */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = "text.plist.xml";
+			name = "Info-B.plist";
+			path = "Info-B.plist";
+			sourceTree = "<group>";
+		};
+		100000000000000000000026 /* InstanceID.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			name = "InstanceID.swift";
+			path = "InstanceID.swift";
+			sourceTree = "<group>";
+		};
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -199,6 +288,16 @@
 				100000000000000000000071 /* MediaPlayer.framework in Frameworks */,
 				100000000000000000000072 /* AVFoundation.framework in Frameworks */,
 				100000000000000000000073 /* ShazamKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		200000000000000000000131 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				200000000000000000000123 /* MediaPlayer.framework in Frameworks */,
+				200000000000000000000124 /* AVFoundation.framework in Frameworks */,
+				200000000000000000000125 /* ShazamKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,6 +320,8 @@
 				100000000000000000000023 /* ProbeTypes.swift */,
 				100000000000000000000024 /* DiagnosticsView.swift */,
 				100000000000000000000025 /* Info.plist */,
+				200000000000000000000102 /* Info-B.plist */,
+				100000000000000000000026 /* InstanceID.swift */,
 				100000000000000000000004 /* Probes */,
 			);
 			name = "LCProbe";
@@ -247,6 +348,7 @@
 			isa = PBXGroup;
 			children = (
 				100000000000000000000007 /* LCProbe.app */,
+				200000000000000000000101 /* LCProbeB.app */,
 			);
 			name = "Products";
 			sourceTree = "<group>";
@@ -269,6 +371,21 @@
 			productReference = 100000000000000000000007 /* LCProbe.app */;
 			productType = "com.apple.product-type.application";
 		};
+		200000000000000000000133 /* LCProbeB */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 200000000000000000000136 /* Build configuration list for PBXNativeTarget "LCProbeB" */;
+			buildPhases = (
+				200000000000000000000130 /* Sources */,
+				200000000000000000000131 /* Frameworks */,
+				200000000000000000000132 /* Resources */,
+			);
+			buildRules = ( );
+			dependencies = ( );
+			name = "LCProbeB";
+			productName = "LCProbeB";
+			productReference = 200000000000000000000101 /* LCProbeB.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -279,6 +396,10 @@
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					100000000000000000000006 /* LCProbe */ = {
+						CreatedOnToolsVersion = 15.0;
+						LastSwiftMigration = 1500;
+					};
+					200000000000000000000133 /* LCProbeB */ = {
 						CreatedOnToolsVersion = 15.0;
 						LastSwiftMigration = 1500;
 					};
@@ -298,12 +419,19 @@
 			projectRoot = "";
 			targets = (
 				100000000000000000000006 /* LCProbe */,
+				200000000000000000000133 /* LCProbeB */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		100000000000000000000010 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = ( );
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		200000000000000000000132 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = ( );
@@ -320,6 +448,7 @@
 				100000000000000000000052 /* LogStore.swift in Sources */,
 				100000000000000000000053 /* ProbeTypes.swift in Sources */,
 				100000000000000000000054 /* DiagnosticsView.swift in Sources */,
+				100000000000000000000055 /* InstanceID.swift in Sources */,
 				100000000000000000000061 /* EntitlementProbe.swift in Sources */,
 				100000000000000000000062 /* SystemPlayerProbe.swift in Sources */,
 				100000000000000000000063 /* FileShareProbe.swift in Sources */,
@@ -328,6 +457,26 @@
 				100000000000000000000066 /* LoopbackProbe.swift in Sources */,
 				100000000000000000000067 /* GuestMusicProbe.swift in Sources */,
 				100000000000000000000068 /* PiPProbe.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		200000000000000000000130 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				200000000000000000000110 /* LCProbeApp.swift in Sources */,
+				200000000000000000000111 /* LogStore.swift in Sources */,
+				200000000000000000000112 /* ProbeTypes.swift in Sources */,
+				200000000000000000000113 /* DiagnosticsView.swift in Sources */,
+				200000000000000000000114 /* InstanceID.swift in Sources */,
+				200000000000000000000115 /* EntitlementProbe.swift in Sources */,
+				200000000000000000000116 /* SystemPlayerProbe.swift in Sources */,
+				200000000000000000000117 /* FileShareProbe.swift in Sources */,
+				200000000000000000000118 /* DarwinNotifyProbe.swift in Sources */,
+				200000000000000000000119 /* ShazamProbe.swift in Sources */,
+				200000000000000000000120 /* LoopbackProbe.swift in Sources */,
+				200000000000000000000121 /* GuestMusicProbe.swift in Sources */,
+				200000000000000000000122 /* PiPProbe.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,11 +613,11 @@
 				CODE_SIGN_STYLE = Manual;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "LCProbe/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.guhailong.lcprobe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -483,13 +632,52 @@
 				CODE_SIGN_STYLE = Manual;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "LCProbe/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.guhailong.lcprobe;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Release";
+		};
+		200000000000000000000134 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CURRENT_PROJECT_VERSION = 3;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "LCProbe/Info-B.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 0.1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.guhailong.lcprobe2;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Debug";
+		};
+		200000000000000000000135 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CURRENT_PROJECT_VERSION = 3;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "LCProbe/Info-B.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 0.1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.guhailong.lcprobe2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -513,6 +701,15 @@
 			buildConfigurations = (
 				100000000000000000000015 /* Debug */,
 				100000000000000000000016 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = "Release";
+		};
+		200000000000000000000136 /* Build configuration list for PBXNativeTarget "LCProbeB" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				200000000000000000000134 /* Debug */,
+				200000000000000000000135 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = "Release";
