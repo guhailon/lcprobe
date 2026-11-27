@@ -27,11 +27,24 @@ final class ShazamProbe {
     static let timeout: TimeInterval = 30.0
     static let matchAttemptInterval: TimeInterval = 3.0
 
+    /// 正在进行的识别：run() 返回后仍需有人持有 ShazamRunState。
+    /// 病根（2026-11-27 实测：5 次启动 0 次出结果，界面一直卡“运行中”）：
+    /// 旧代码里 state 只是 run() 的局部变量，run() 一返回就释放；
+    /// 定时器、30 秒超时 workItem、麦克风 tap 全是 [weak self]，
+    /// 释放后全部哑火——超时那行永远等不到，completion 永远不调。
+    /// finish() 里清掉；同一时间只允许一次识别。
+    fileprivate static var activeRun: ShazamRunState?
+
     static func run(log: LogStore, completion: @escaping (ProbeOutcome, String) -> Void) {
         log.log("[T6] 请用扬声器播放 QQ 音乐再点运行，耳机场景预期失败")
         log.log("[T6] 开始 ShazamKit 单次识别（最长等 \(Int(timeout)) 秒）")
 
+        if activeRun != nil {
+            completion(.notTestable("已有一次识别在进行"), "已有一次识别在进行")
+            return
+        }
         let state = ShazamRunState(log: log, completion: completion)
+        activeRun = state
         state.start()
     }
 }
@@ -59,6 +72,12 @@ private final class ShazamRunState: NSObject, SHSessionDelegate {
     init(log: LogStore, completion: @escaping (ProbeOutcome, String) -> Void) {
         self.log = log
         self.completion = completion
+    }
+
+    /// 诊断用：释放只应在 finish() 清掉 activeRun 之后发生。
+    /// 若这行出现在“结束：”之前，说明持有又断了，超时仍会哑火。
+    deinit {
+        log.log("[T6] 识别状态已释放")
     }
 
     func start() {
@@ -188,6 +207,8 @@ private final class ShazamRunState: NSObject, SHSessionDelegate {
         engine.stop()
         try? AVAudioSession.sharedInstance().setActive(false)
         log.log("[T6] 结束：\(summary)")
+        // 先放掉持有（触发 deinit 日志），再调 completion 解开界面“运行中”。
+        ShazamProbe.activeRun = nil
         completion(outcome, summary)
     }
 

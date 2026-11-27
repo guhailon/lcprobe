@@ -1,7 +1,7 @@
-# LCProbe v0.1 云端编译：不签名导出（archive），LC 自己重签。
+# LCProbe v0.1.1 云端编译：不签名导出（archive），LC 自己重签。
 # 做法照 TrollLyricsDesk 的 build.yml，去掉 zsign 与 entitlements 步骤。
-# 推代码就自动跑；跑完在该次运行的 Artifacts 里下载 LCProbe-0.1.0.ipa
-# 与 LCProbe-0.1.0-dSYM.zip。
+# 推代码就自动跑；跑完在该次运行的 Artifacts 里下载 LCProbe-0.1.1.ipa
+# 与 LCProbe-0.1.1-dSYM.zip。
 name: Build
 
 on:
@@ -29,7 +29,7 @@ jobs:
             find . -name '*.entitlements'
             exit 1
           fi
-          if grep -rn '"0.1.0"' --include='*.swift' LCProbe/; then
+          if grep -rn '"0.1.1"' --include='*.swift' LCProbe/; then
             echo "FAIL: hardcoded version string found in Swift source"
             exit 1
           fi
@@ -53,31 +53,31 @@ jobs:
 
       - name: Package IPA
         run: |
-          rm -rf Payload LCProbe-0.1.0.ipa
+          rm -rf Payload LCProbe-0.1.1.ipa
           mkdir Payload
           cp -r build/LCProbe.xcarchive/Products/Applications/LCProbe.app Payload/
-          zip -qr LCProbe-0.1.0.ipa Payload
-          ls -la LCProbe-0.1.0.ipa
-          unzip -l LCProbe-0.1.0.ipa
+          zip -qr LCProbe-0.1.1.ipa Payload
+          ls -la LCProbe-0.1.1.ipa
+          unzip -l LCProbe-0.1.1.ipa
 
       - name: Package dSYM
         # archive 是 dwarf-with-dsym，xcarchive/dSYMs 里有 App 的 dSYM；
         # ls 先验 dSYMs 在不在——没有就是构建配置被动过，这一步要响亮地失败。
         run: |
           ls -la build/LCProbe.xcarchive/dSYMs/
-          rm -f LCProbe-0.1.0-dSYM.zip
-          zip -qr LCProbe-0.1.0-dSYM.zip build/LCProbe.xcarchive/dSYMs
-          ls -la LCProbe-0.1.0-dSYM.zip
-          unzip -l LCProbe-0.1.0-dSYM.zip
+          rm -f LCProbe-0.1.1-dSYM.zip
+          zip -qr LCProbe-0.1.1-dSYM.zip build/LCProbe.xcarchive/dSYMs
+          ls -la LCProbe-0.1.1-dSYM.zip
+          unzip -l LCProbe-0.1.1-dSYM.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LCProbe-0.1.0
-          path: LCProbe-0.1.0.ipa
+          name: LCProbe-0.1.1
+          path: LCProbe-0.1.1.ipa
 
       - name: Upload dSYM artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LCProbe-0.1.0-dSYM
-          path: LCProbe-0.1.0-dSYM.zip
+          name: LCProbe-0.1.1-dSYM
+          path: LCProbe-0.1.1-dSYM.zip
