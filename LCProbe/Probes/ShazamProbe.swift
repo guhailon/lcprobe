@@ -23,8 +23,9 @@ final class ShazamProbe {
     static let id = "T6"
     static let title = "T6 ShazamKit 识别"
 
-    private static let timeout: TimeInterval = 30.0
-    private static let matchAttemptInterval: TimeInterval = 3.0
+    // ShazamRunState 也要用这两个常量，故不用 private（同文件内另一类型访问不到 private）。
+    static let timeout: TimeInterval = 30.0
+    static let matchAttemptInterval: TimeInterval = 3.0
 
     static func run(log: LogStore, completion: @escaping (ProbeOutcome, String) -> Void) {
         log.log("[T6] 请用扬声器播放 QQ 音乐再点运行，耳机场景预期失败")
@@ -96,7 +97,11 @@ private final class ShazamRunState: NSObject, SHSessionDelegate {
 
         inputNode.installTap(onBus: 0, bufferSize: 4096, format: format) { [weak self] buffer, time in
             guard let self else { return }
-            self.generator.append(buffer, at: time)
+            do {
+                try self.generator.append(buffer, at: time)
+            } catch {
+                self.log.log("[T6] 追加音频签名失败：\(error.localizedDescription)")
+            }
         }
 
         do {
@@ -111,7 +116,7 @@ private final class ShazamRunState: NSObject, SHSessionDelegate {
 
         // 每隔几秒用当前签名尝试一次匹配；30 秒超时未出结果即失败。
         let timer = DispatchSource.makeTimerSource(queue: .main)
-        timer.schedule(deadline: .now() + Self.matchAttemptInterval, repeating: Self.matchAttemptInterval)
+        timer.schedule(deadline: .now() + ShazamProbe.matchAttemptInterval, repeating: ShazamProbe.matchAttemptInterval)
         timer.setEventHandler { [weak self] in
             self?.attemptMatch()
         }
@@ -122,19 +127,14 @@ private final class ShazamRunState: NSObject, SHSessionDelegate {
             self?.finishWithTimeout()
         }
         timeoutWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + Self.timeout, execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + ShazamProbe.timeout, execute: workItem)
     }
 
     /// 用当前累积的签名向 ShazamKit 发起一次匹配（同一时间只发一次）。
     private func attemptMatch() {
         guard !finished, !matchInFlight else { return }
-        let signature: SHSignature
-        do {
-            signature = try generator.signature()
-        } catch {
-            log.log("[T6] 生成签名失败：\(error.localizedDescription)")
-            return
-        }
+        // 本 SDK 里 signature() 不抛错，直接取。
+        let signature = generator.signature()
         matchInFlight = true
         session.match(signature)
     }
@@ -160,7 +160,7 @@ private final class ShazamRunState: NSObject, SHSessionDelegate {
         if let error {
             log.log("[T6] 一次匹配无结果（带错误）：\(error.localizedDescription)")
         } else {
-            log.log("[T6] 一次匹配无结果，继续等（总限 \(Int(Self.timeout)) 秒）")
+            log.log("[T6] 一次匹配无结果，继续等（总限 \(Int(ShazamProbe.timeout)) 秒）")
         }
         // 不在这里结束：等下一次尝试或 30 秒超时再定论。
     }

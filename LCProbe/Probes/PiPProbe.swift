@@ -72,7 +72,7 @@ final class PiPProbe {
             if let writeError = writeError {
                 let summary = "AVAssetWriter 写视频失败：\(writeError.localizedDescription)"
                 log.log("[T9] 结论：notTestable（\(summary)）")
-                completion(.notTestable(summary))
+                completion(.notTestable(summary), summary)
                 return
             }
             log.log("[T9] 视频已写出：\(outputURL.path)（640x360、5 行歌词各 1 秒、共 5 秒、无声音轨）")
