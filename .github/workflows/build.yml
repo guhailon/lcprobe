@@ -1,0 +1,83 @@
+# LCProbe v0.1 云端编译：不签名导出（archive），LC 自己重签。
+# 做法照 TrollLyricsDesk 的 build.yml，去掉 zsign 与 entitlements 步骤。
+# 推代码就自动跑；跑完在该次运行的 Artifacts 里下载 LCProbe-0.1.0.ipa
+# 与 LCProbe-0.1.0-dSYM.zip。
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Self-check
+        # 探针工程的红线：仓库里不许有 entitlements 文件；
+        # Swift 源码里不许写死版本号（版本号只从 Info.plist / Bundle 读）。
+        run: |
+          if find . -name '*.entitlements' -print -quit | grep -q .; then
+            echo "FAIL: found *.entitlements in repo"
+            find . -name '*.entitlements'
+            exit 1
+          fi
+          if grep -rn '"0.1.0"' --include='*.swift' LCProbe/; then
+            echo "FAIL: hardcoded version string found in Swift source"
+            exit 1
+          fi
+          echo "Self-check passed: no entitlements, no hardcoded version in Swift."
+
+      - name: Archive (unsigned)
+        run: |
+          xcodebuild -project LCProbe.xcodeproj \
+            -scheme LCProbe \
+            -configuration Release \
+            -archivePath build/LCProbe.xcarchive \
+            archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+
+      - name: Verify archive layout
+        run: |
+          APP=build/LCProbe.xcarchive/Products/Applications/LCProbe.app
+          ls -la "$APP"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$APP/Info.plist"
+
+      - name: Package IPA
+        run: |
+          rm -rf Payload LCProbe-0.1.0.ipa
+          mkdir Payload
+          cp -r build/LCProbe.xcarchive/Products/Applications/LCProbe.app Payload/
+          zip -qr LCProbe-0.1.0.ipa Payload
+          ls -la LCProbe-0.1.0.ipa
+          unzip -l LCProbe-0.1.0.ipa
+
+      - name: Package dSYM
+        # archive 是 dwarf-with-dsym，xcarchive/dSYMs 里有 App 的 dSYM；
+        # ls 先验 dSYMs 在不在——没有就是构建配置被动过，这一步要响亮地失败。
+        run: |
+          ls -la build/LCProbe.xcarchive/dSYMs/
+          rm -f LCProbe-0.1.0-dSYM.zip
+          zip -qr LCProbe-0.1.0-dSYM.zip build/LCProbe.xcarchive/dSYMs
+          ls -la LCProbe-0.1.0-dSYM.zip
+          unzip -l LCProbe-0.1.0-dSYM.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LCProbe-0.1.0
+          path: LCProbe-0.1.0.ipa
+
+      - name: Upload dSYM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LCProbe-0.1.0-dSYM
+          path: LCProbe-0.1.0-dSYM.zip
