@@ -1,5 +1,6 @@
 import Foundation
 import Darwin
+import MachO
 
 /// T10 TweakLoader 注入诊断：KuwoBridge dylib 从不加载，查链子断在哪。
 ///
