@@ -1,14 +1,14 @@
-# LCProbe v0.1.2 真机测试操作说明
+# LCProbe v0.1.3 真机测试操作说明
 
 ## 测试设备
 
 - **主测机（必须）：iPhone 13 Pro / iOS 27.0.1 / LiveContainer 3.8.12 / SideStore 开发者签名。**
-  T1–T9 全部以这台机的结果为准。
+  T1–T10 全部以这台机的结果为准。
 - **对照机：iPhone 11（已越狱，TrollStore）。只作 T2 / T3 对照**——同一首 Apple Music / QQ 音乐
   在 TrollStore 版 TrollLyricsDesk 里的表现，确认“读不到”是 LC 环境问题、不是歌的问题。
-- **安装方式：** LCProbe 与 LCProbeB 都以 LC Guest 方式安装进主测机（不要装成系统 App，不要改签名）。
-  LCProbeB 是第二个变体（bundle ID `com.guhailong.lcprobe2`，显示名 LCProbeB），
-  与 LCProbe 各自一份安装、各自一个实例 ID，专门用来做 T4 / T5 / T7 的双实例跨 Guest 测试。
+- **安装方式：** v0.1.3 只发 LCProbe 单 IPA，以 LC Guest 方式安装进主测机（不要装成系统 App，
+  不要改签名）。LCProbeB 变体不再发——T4 / T5 / T7 的双实例跨 Guest 测试，用已装的旧版
+  LCProbeB（0.1.2，bundle ID `com.guhailong.lcprobe2`），或第二份 LCProbe。
   两个 App 都装好后，在 LiveContainer 多任务里左右并排打开，一边点一下即可对照。
 
 ## 通用规则
@@ -197,11 +197,43 @@
 AVAssetWriter 写视频失败记为“无法测试”并写明错误。
 本实验不预设“系统 PiP 只支持视频”成立或不成立，只记录实测。
 
+## T10 — TweakLoader 注入诊断（v0.1.3 新增，头号结论）
+
+背景：KuwoBridge dylib 在这台机上从不加载——全局 `Tweaks/` 文件夹与专属
+`Tweaks/KuwoBridge/` 文件夹都试过，进酷我与进 LCProbe 都没 log、没弹窗，
+全局测试已受控验证为阴性。T10 直接查链子断在哪。
+
+1. 在主测机上打开 LiveContainer，进入 LCProbe（0.1.3）。
+2. 点诊断页的 **T10**，等它跑完。
+3. 记录诊断页显示的头号结论：**TweakLoader 已加载** 还是 **TweakLoader 未加载**。
+   如果是“已加载”，记下它后面括号里的镜像路径。
+4. 再记录其余四件：
+   - `LC_LOAD_DYLIB 补丁`：有还是无（有＝装客体时打了注入补丁；无＝装的时候就没打）；
+   - `dontInjectTweakLoader`：true / false / absent；
+   - `LCTweakFolder`：值是什么（例如 `KuwoBridge`）还是 absent；
+   - 全局 Tweaks 里 `KuwoBridge.dylib`：有还是无（以及专属文件夹里的情况）。
+5. 在日志里确认每一条都有时间戳记录，导出 `Documents/LCProbe.log` 发回。
+
+通过标准：测准，不是测通——头号结论明确（已加载 / 未加载）且四件配得上即通过。
+**解读：**
+- 未加载 + 补丁无＝装的时候就没打补丁（LC 安装步骤问题）；
+- 未加载 + 补丁有＝打了补丁但加载器没进进程（LC 启动/加载器问题）；
+- 已加载 + dylib 在文件夹里＝加载器在工作，问题在 dylib 本身或签名上；
+- `dontInjectTweakLoader=true`＝本客体被显式关掉了注入。
+
+## T7 端口文件修复（v0.1.3）
+
+v0.1.2 的 T7 服务端写端口文件用原子写（先写 `.tmp` 再重命名），在 LC 共享目录
+报了 11 次错——建临时文件就被拒，端口文件一直停在旧值，客户端自动发现失效。
+v0.1.3 改为直接覆盖写（非原子）。验证方法：点一次 T7 **“服务端”**，再去共享
+Documents 看 `LCProbePort-<实例 ID>.json` 里的时间戳与端口是不是这次的；
+另一实例点 T7 **“客户端”**，看它能不能自动读到、不再报“未找到另一实例的端口文件”。
+
 ---
 
 ## 测完之后
 
-1. 在 LCProbe 诊断页确认 T1–T9 每一项都有一行结果（通过 / 不通过 / 无法测试）。
+1. 在 LCProbe 诊断页确认 T1–T10 每一项都有一行结果（通过 / 不通过 / 无法测试）。
 2. 点“导出日志”，把 `Documents/LCProbe.log` 发回；**LCProbeB 的日志也同样导出一份发回**
   （T4 / T5 / T7 的跨实例结论要两边的日志对照着看才算数）。
 3. 对照机（iPhone 11）的 T2 / T3 对照结果一并发回。

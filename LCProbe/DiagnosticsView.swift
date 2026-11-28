@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-/// LCProbe 诊断页：T1–T9 每项一行结果 + 原始日志滚动区 + 一键导出。
+/// LCProbe 诊断页：T1–T10 每项一行结果 + 原始日志滚动区 + 一键导出。
 ///
 /// 约定（由骨架文件提供，本文件不重定义）：
 /// - LogStore: ObservableObject，LogStore.shared，log(_:)，lines，exportURL()
@@ -26,7 +26,7 @@ struct DiagnosticsView: View {
                 headerView
 
                 List {
-                    Section(header: Text("探针 T1–T9")) {
+                    Section(header: Text("探针 T1–T10")) {
                         ForEach($probes) { $state in
                             probeRow(state: $state)
                         }
@@ -179,6 +179,8 @@ struct DiagnosticsView: View {
             GuestMusicProbe.run(log: logStore, completion: completion)
         case PiPProbe.id:
             PiPProbe.run(log: logStore, completion: completion)
+        case TweakLoaderProbe.id:
+            TweakLoaderProbe.run(log: logStore, completion: completion)
         default:
             DispatchQueue.main.async {
                 runningIDs.remove(id)
@@ -285,6 +287,7 @@ struct DiagnosticsView: View {
             ProbeState(id: LoopbackProbe.id, title: LoopbackProbe.title, detail: "T7 Loopback 双 Guest", outcome: .notRun, summary: "", lastRun: nil),
             ProbeState(id: GuestMusicProbe.id, title: GuestMusicProbe.title, detail: "T8 LC 内 QQ/网易云", outcome: .notRun, summary: "", lastRun: nil),
             ProbeState(id: PiPProbe.id, title: PiPProbe.title, detail: "T9 系统 PiP", outcome: .notRun, summary: "", lastRun: nil),
+            ProbeState(id: TweakLoaderProbe.id, title: TweakLoaderProbe.title, detail: "T10 TweakLoader 注入诊断", outcome: .notRun, summary: "", lastRun: nil),
         ]
     }
 }

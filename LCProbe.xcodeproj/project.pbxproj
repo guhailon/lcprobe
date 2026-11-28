@@ -55,6 +55,10 @@
 			isa = PBXBuildFile;
 			fileRef = 100000000000000000000038 /* PiPProbe.swift */;
 		};
+		100000000000000000000069 /* TweakLoaderProbe.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000044 /* TweakLoaderProbe.swift */;
+		};
 		100000000000000000000071 /* MediaPlayer.framework in Frameworks */ = {
 			isa = PBXBuildFile;
 			fileRef = 100000000000000000000041 /* MediaPlayer.framework */;
@@ -122,6 +126,10 @@
 		200000000000000000000122 /* PiPProbe.swift in Sources */ = {
 			isa = PBXBuildFile;
 			fileRef = 100000000000000000000038 /* PiPProbe.swift */;
+		};
+		200000000000000000000127 /* TweakLoaderProbe.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 100000000000000000000044 /* TweakLoaderProbe.swift */;
 		};
 		200000000000000000000123 /* MediaPlayer.framework in Frameworks */ = {
 			isa = PBXBuildFile;
@@ -236,6 +244,13 @@
 			path = "PiPProbe.swift";
 			sourceTree = "<group>";
 		};
+		100000000000000000000044 /* TweakLoaderProbe.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			name = "TweakLoaderProbe.swift";
+			path = "TweakLoaderProbe.swift";
+			sourceTree = "<group>";
+		};
 		100000000000000000000041 /* MediaPlayer.framework */ = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -339,6 +354,7 @@
 				100000000000000000000036 /* LoopbackProbe.swift */,
 				100000000000000000000037 /* GuestMusicProbe.swift */,
 				100000000000000000000038 /* PiPProbe.swift */,
+				100000000000000000000044 /* TweakLoaderProbe.swift */,
 			);
 			name = "Probes";
 			path = "Probes";
@@ -457,6 +473,7 @@
 				100000000000000000000066 /* LoopbackProbe.swift in Sources */,
 				100000000000000000000067 /* GuestMusicProbe.swift in Sources */,
 				100000000000000000000068 /* PiPProbe.swift in Sources */,
+				100000000000000000000069 /* TweakLoaderProbe.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,6 +494,7 @@
 				200000000000000000000120 /* LoopbackProbe.swift in Sources */,
 				200000000000000000000121 /* GuestMusicProbe.swift in Sources */,
 				200000000000000000000122 /* PiPProbe.swift in Sources */,
+				200000000000000000000127 /* TweakLoaderProbe.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,11 +631,11 @@
 				CODE_SIGN_STYLE = Manual;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "LCProbe/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 0.1.2;
+				MARKETING_VERSION = 0.1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.guhailong.lcprobe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -632,12 +650,12 @@
 				CODE_SIGN_STYLE = Manual;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "LCProbe/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 0.1.2;
+				MARKETING_VERSION = 0.1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.guhailong.lcprobe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -652,11 +670,11 @@
 				CODE_SIGN_STYLE = Manual;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "LCProbe/Info-B.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 0.1.2;
+				MARKETING_VERSION = 0.1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.guhailong.lcprobe2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -671,12 +689,12 @@
 				CODE_SIGN_STYLE = Manual;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "LCProbe/Info-B.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				MARKETING_VERSION = 0.1.2;
+				MARKETING_VERSION = 0.1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.guhailong.lcprobe2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

@@ -126,6 +126,11 @@ final class LoopbackProbe {
     }
 
     /// 把本实例的服务端口写进共享目录：LCProbePort-<instanceID>.json。
+    /// v0.1.3：直接写（非原子）。v0.1.2 的原子写法（先写 .tmp 再重命名）
+    /// 在 LC 共享目录报了 11 次错——建临时文件就被拒（“你沒有在檔案夾
+    /// 「Documents」裡面儲存檔案「.LCProbePort-….tmp」的權限”），端口文件
+    /// 一直停在旧值，自动发现失效。直接覆盖写是本文件的唯一写入者，
+    /// 无并发写同一文件的问题。
     /// 返回写好的文件 URL，写失败返回 nil（只记日志）。
     private static func writePortFile(port: Int, log: LogStore) -> URL? {
         let instanceID = CrossGuest.instanceID
@@ -143,18 +148,12 @@ final class LoopbackProbe {
             log.log("[T7] 端口文件 JSON 序列化失败")
             return nil
         }
-        let tempURL = dir.appendingPathComponent(".LCProbePort-\(instanceID).tmp")
         do {
-            try data.write(to: tempURL, options: .atomic)
-            if FileManager.default.fileExists(atPath: url.path) {
-                try FileManager.default.removeItem(at: url)
-            }
-            try FileManager.default.moveItem(at: tempURL, to: url)
-            log.log("[T7] 已写端口文件：\(url.path)")
+            try data.write(to: url, options: [])
+            log.log("[T7] 已写端口文件：\(url.path)（直接写，非原子）")
             return url
         } catch {
             log.log("[T7] 写端口文件失败 \(url.path)：\(error.localizedDescription)")
-            try? FileManager.default.removeItem(at: tempURL)
             return nil
         }
     }
